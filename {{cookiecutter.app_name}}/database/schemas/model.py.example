@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# -*- encoding=utf-8 -*-
+
+
+from sqlalchemy import Column, Index, ForeignKey
+from sqlalchemy import Integer, DateTime, String, Boolean, Enum
+
+from .model_base import ModelBase
+
+
+class Example(ModelBase):
+
+    __tablename__ = 'example'
+
+    # ...
+
+__all__ = ['Example']

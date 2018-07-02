@@ -13,7 +13,7 @@ if [ "$(docker ps -q -f name=migrationdb_{{cookiecutter.app_name}})" ]; then
 fi
 
 echo ">>>>> Starting migration db ..."
-docker run -d --rm --name "migrationdb_{{cookiecutter.app_name}}" -p 127.0.0.1:{{cookiecutter.devdb_port + 10000}}:3306 \
+docker run -d --rm --name "migrationdb_{{cookiecutter.app_name}}" -p 127.0.0.1:26033:3306 \
   -e MYSQL_ROOT_PASSWORD=123456 \
   -e MYSQL_DATABASE=migration \
   mysql:5.7.21

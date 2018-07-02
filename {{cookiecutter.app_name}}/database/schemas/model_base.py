@@ -4,6 +4,8 @@
 import weakref
 from sqlalchemy import Column, func
 from sqlalchemy import Integer, DateTime
+from sqlalchemy.schema import CreateTable
+from sqlalchemy.dialects import mysql
 from sqlalchemy.ext.declarative import declarative_base
 
 
@@ -28,4 +30,13 @@ model_registry = weakref.WeakValueDictionary()
 ModelBase = declarative_base(
     cls=ModelBaseObject, class_registry=model_registry)
 
-__all__ = ['model_registry', 'ModelBase']
+def create_all():
+    """
+    返回全部表的 create table
+    """
+    creates = []
+    for t in ModelBase.metadata.sorted_tables:
+        creates.append(str(CreateTable(t).compile(dialect=mysql.dialect()))+";")
+    return '\n\n'.join(creates)
+
+__all__ = ['model_registry', 'ModelBase', 'create_all']

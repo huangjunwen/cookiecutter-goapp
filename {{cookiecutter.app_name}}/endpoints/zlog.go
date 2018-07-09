@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -31,5 +32,5 @@ func (l *zlogEntry) Write(status, sz int, dur time.Duration) {
 
 func (l *zlogEntry) Panic(v interface{}, stack []byte) {
 	r := (*http.Request)(l)
-	hlog.FromRequest(r).Error().Interface("panic", v).Bytes("stack", stack).Msg("")
+	hlog.FromRequest(r).Error().Str("panic", fmt.Sprint(v)).Bytes("stack", stack).Msg("")
 }

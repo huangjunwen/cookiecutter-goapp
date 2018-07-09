@@ -3,8 +3,8 @@ package {{ cookiecutter.app_name }}
 import (
 	"database/sql"
 
-	_ "github.com/go-sql-driver/mysql"
 	"%%baseimport%%/vars"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // Initialize 初始化该 app，参数为:

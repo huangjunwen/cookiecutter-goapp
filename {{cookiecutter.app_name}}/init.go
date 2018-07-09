@@ -3,6 +3,7 @@ package {{ cookiecutter.app_name }}
 import (
 	"database/sql"
 
+	_ "github.com/go-sql-driver/mysql"
 	"%%baseimport%%/vars"
 )
 
@@ -17,7 +18,7 @@ func Initialize(
 	vars.URLPrefix = urlPrefix
 
 	// 数据库连接
-	db, err := sql.Open(dsn)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}

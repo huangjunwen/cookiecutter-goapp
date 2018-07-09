@@ -11,3 +11,9 @@ command -v alembic > /dev/null 2>&1 || { echo >&2 "alembic is required but not i
 
 # Check some dependencies.
 pip show -q pymysql || { echo >&2 "pymysql is not installed. Aborting"; exit 1; }
+
+# Check current whether current path is under $GOPATH
+if [[ $PWD != $GOPATH/src/* ]]; then
+  echo "$PWD is not in GOPATH"
+  exit 1
+fi

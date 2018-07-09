@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"net/http"
-	"time"
 
 	"%%baseimport%%/vars"
 	"github.com/go-chi/chi/middleware"

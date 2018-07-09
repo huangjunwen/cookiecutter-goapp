@@ -19,7 +19,7 @@ func InitEndpoints() error {
 			Str("method", r.Method).
 			Str("url", r.URL.String()).
 			Int("status", status).
-			Int("sz", size).
+			Int("sz", sz).
 			Dur("dur", dur).
 			Msg("")
 	}))

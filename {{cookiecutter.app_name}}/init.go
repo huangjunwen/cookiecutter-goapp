@@ -15,7 +15,7 @@ func Initialize(
 ) (chi.Router, error) {
 	// 初始化日志
 	vars.LogLevel = logLevel
-	vars.Logger = zerolog.New(os.Stdout).Level(vars.LogLevel).With().Timestamp().Str("app", "{{cookiecutter.app_name}}").Logger()
+	vars.Logger = zerolog.New(os.Stderr).Level(vars.LogLevel).With().Timestamp().Str("app", "{{cookiecutter.app_name}}").Logger()
 
 	// TODO 初始化其它全局变量
 	// ...

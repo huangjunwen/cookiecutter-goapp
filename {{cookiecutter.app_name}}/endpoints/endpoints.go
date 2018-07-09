@@ -13,22 +13,14 @@ import (
 func InitEndpoints() error {
 	rt := vars.Router
 
-	// 安装一些中间件
-	rt.Use(hlog.AccessHandler(func(r *http.Request, status, sz int, dur time.Duration) {
-		hlog.FromRequest(r).Info().
-			Str("method", r.Method).
-			Str("url", r.URL.String()).
-			Int("status", status).
-			Int("sz", sz).
-			Dur("dur", dur).
-			Msg("")
-	}))
-	rt.Use(hlog.RequestIDHandler("reqid", "Inapp-Req-ID"))
+	// 一些基础中间件，从上到下对应从最外层到最内层
 	rt.Use(hlog.NewHandler(vars.Logger))
+	rt.Use(hlog.RequestIDHandler("reqid", "Diizuu-Req-ID"))
+	rt.Use(middleware.RequestLogger(zlogFormatter{}))
 	rt.Use(middleware.Recoverer)
 
-	rt.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("找不到页面"))
+	rt.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello {{cookiecutter.app_name}}"))
 	})
 
 	return nil

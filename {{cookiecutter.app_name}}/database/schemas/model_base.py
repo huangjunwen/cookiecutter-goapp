@@ -2,6 +2,9 @@
 # -*- encoding=utf-8 -*-
 
 import weakref
+from StringIO import StringIO
+
+import sqlalchemy as sa
 from sqlalchemy import Column, func
 from sqlalchemy import Integer, DateTime
 from sqlalchemy.schema import CreateTable
@@ -33,10 +36,17 @@ ModelBase = declarative_base(
 def create_all():
     """
     返回全部表的 create table
+    ref: https://gist.github.com/eirnym/d9079e5eee380450f464
     """
-    creates = []
-    for t in ModelBase.metadata.sorted_tables:
-        creates.append(str(CreateTable(t).compile(dialect=mysql.dialect()))+";")
-    return '\n\n'.join(creates)
+    out = StringIO()
+    def dump(sql, *args, **kws):
+        out.write('{};\n'.format(str(sql.compile(dialect=dump.dialect)).strip()))
+
+    engine = sa.create_engine("mysql://", strategy='mock', executor=dump)
+    dump.dialect = engine.dialect
+
+    ModelBase.metadata.create_all(engine)
+
+    return out.getvalue()
 
 __all__ = ['model_registry', 'ModelBase', 'create_all']

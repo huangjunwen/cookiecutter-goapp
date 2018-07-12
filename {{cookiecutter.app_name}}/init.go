@@ -19,7 +19,7 @@ func Initialize(
 	// 日志
 	{
 		vars.LogLevel = logLevel
-		vars.Logger = zerolog.New(os.Stderr).Level(vars.LogLevel).With().Timestamp().Str("app", "{{cookiecutter.app_name}}").Logger()
+		vars.Logger = zerolog.New(os.Stdout).Level(vars.LogLevel).With().Timestamp().Str("app", "{{cookiecutter.app_name}}").Logger()
 	}
 
 	// 数据库

@@ -14,7 +14,7 @@ import (
 // ZHTTPLogger 使用 zerolog 为 HTTP 请求/响应写日志
 type ZHTTPLogger struct{}
 
-// bufReader 会将从源 Reader 读取出的数据 buffer 起来，之后可以通过 Bytes 方法获得
+// bufReader 会将从源 Reader 读取出的数据 buffer 起来，之后可以通过 Data 方法获得
 type bufReader struct {
 	src    io.ReadCloser
 	reader io.Reader
@@ -34,54 +34,82 @@ var (
 )
 
 func (l ZHTTPLogger) LogRequest(req *http.Request) {
+	// 替换 request 的 body
 	req.Body = newBufReader(req.Body)
 }
 
 func (l ZHTTPLogger) LogResponse(req *http.Request, resp *http.Response, err error, dur time.Duration) {
-	logger := zerolog.Ctx(req.Context()).With().
-		Str("comp", "http").
-		Str("req.method", req.Method).
-		Str("req.url", req.URL.String()).
-		Bytes("req.body", req.Body.(*bufReader).Data()).
-		Str("dur", dur.String()).Logger()
 
+	var (
+		respReader *mockReader
+	)
 	if resp != nil {
-		r := newMockReader(resp.Body)
-		resp.Body = r
-		logger = logger.With().
-			Int("resp.code", resp.StatusCode).
-			Bytes("resp.body", r.Data()).Logger()
+		// NOTE: RoundTrip must return err == nil if it obtained
+		// a response, regardless of the response's HTTP status code.
+		//
+		// 所以当 resp 非空时，err 一定为空
 
-		err = r.Err()
+		// 使用 mockReader 完整读取 response 的 body 并替换之
+		respReader = newMockReader(resp.Body)
+		resp.Body = respReader
+		// 若读取 response 的过程中出现了错误，则也算错误
+		err = respReader.Err()
 	}
 
+	var (
+		ev *zerolog.Event
+	)
+	logger := zerolog.Ctx(req.Context())
 	if err != nil {
-		logger.Error().Err(err).Msg("")
+		ev = logger.Error().Err(err)
 	} else {
-		logger.Info().Msg("")
+		ev = logger.Info()
 	}
+
+	ev = ev.Str("comp", "http.client").Str("dur", dur.String()).
+		Str("req.method", req.Method).Str("req.url", req.URL.String()).Bytes("req.body", req.Body.(*bufReader).Data())
+	if respReader != nil {
+		ev = ev.Int("resp.code", resp.StatusCode).Bytes("resp.body", respReader.Data())
+	}
+	ev.Msg("")
+
 }
 
+// newBufReader 新建一个 bufReader，src 可以为 nil
 func newBufReader(src io.ReadCloser) *bufReader {
+	if src == nil {
+		return nil
+	}
 	ret := &bufReader{
 		src: src,
 	}
+	// 从 src 读多少，就写多少到 buf 中
 	ret.reader = io.TeeReader(src, &ret.buf)
 	return ret
 }
 
 func (r *bufReader) Read(p []byte) (n int, err error) {
+	if r == nil {
+		return 0, io.EOF
+	}
 	return r.reader.Read(p)
 }
 
 func (r *bufReader) Close() error {
+	if r == nil {
+		return nil
+	}
 	return r.src.Close()
 }
 
 func (r *bufReader) Data() []byte {
+	if r == nil {
+		return nil
+	}
 	return r.buf.Bytes()
 }
 
+// newMockReader 新建一个 mockReader，src 不可为 nil
 func newMockReader(src io.ReadCloser) *mockReader {
 	// NOTE: ioutil.ReadAll 不会返回 io.EOF
 	data, err := ioutil.ReadAll(src)

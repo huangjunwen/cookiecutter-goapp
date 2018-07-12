@@ -33,6 +33,7 @@ func (f ZLogFormatter) NewLogEntry(r *http.Request) middleware.LogEntry {
 func (l *zLogEntry) Write(status, sz int, dur time.Duration) {
 	r := (*http.Request)(l)
 	hlog.FromRequest(r).Info().
+		Str("comp", "http.server").
 		Str("method", r.Method).
 		Str("url", r.URL.String()).
 		Int("status", status).
@@ -43,5 +44,9 @@ func (l *zLogEntry) Write(status, sz int, dur time.Duration) {
 
 func (l *zLogEntry) Panic(v interface{}, stack []byte) {
 	r := (*http.Request)(l)
-	hlog.FromRequest(r).Error().Str("panic", fmt.Sprint(v)).Bytes("stack", stack).Msg("")
+	hlog.FromRequest(r).Error().
+		Str("comp", "http.server").
+		Str("panic", fmt.Sprint(v)).
+		Bytes("stack", stack).
+		Msg("")
 }

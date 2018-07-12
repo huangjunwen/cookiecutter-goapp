@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"%%baseimport%%/vars"
+	"github.com/huangjunwen/cookiecutter-goapp/utils/zlog"
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/zerolog/hlog"
 )
@@ -14,8 +15,8 @@ func InitEndpoints() error {
 
 	// 一些基础中间件，从上到下对应从最外层到最内层
 	rt.Use(hlog.NewHandler(vars.Logger))
-	rt.Use(hlog.RequestIDHandler("reqid", "Diizuu-Req-ID"))
-	rt.Use(middleware.RequestLogger(zlogFormatter{}))
+	rt.Use(hlog.RequestIDHandler("reqid", "Inapp-Req-ID"))
+	rt.Use(middleware.RequestLogger(zlog.ZLogFormatter{}))
 	rt.Use(middleware.Recoverer)
 
 	rt.Get("/", func(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,8 @@
 package vars
 
 import (
+	"database/sql"
+
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
 )
@@ -13,6 +15,10 @@ var (
 	// 日志
 	LogLevel zerolog.Level = zerolog.InfoLevel
 	Logger   zerolog.Logger
+
+	// 数据库
+	DSN string
+	DB  *sql.DB
 
 	// TODO ...
 )

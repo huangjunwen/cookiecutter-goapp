@@ -10,6 +10,7 @@ import (
 
 func main() {
 	rt, err := {{cookiecutter.app_name}}.Initialize(
+		"root:123456@tcp(localhost:{{cookiecutter.devdb_port}})/dev?parseTime=true",
 		zerolog.InfoLevel,
 	)
 	if err != nil {

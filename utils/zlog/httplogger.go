@@ -12,6 +12,8 @@ import (
 )
 
 // ZHTTPLogger 使用 zerolog 为 HTTP 请求/响应写日志
+//
+// NOTE: 它会完整地读取请求/响应的 body 到内存并打印到日志中，故只适合于请求/响应都比较简短的场合使用（如 API 调用）
 type ZHTTPLogger struct{}
 
 // bufReader 会将从源 Reader 读取出的数据 buffer 起来，之后可以通过 Data 方法获得
@@ -21,8 +23,8 @@ type bufReader struct {
 	buf    bytes.Buffer
 }
 
-// mockReader 用于仿制一个源 Reader，包括最后返回的错误
-type mockReader struct {
+// replayReader 用于重播一个源 Reader，包括最后返回的错误
+type replayReader struct {
 	reader io.Reader
 	data   []byte
 	err    error
@@ -30,7 +32,7 @@ type mockReader struct {
 
 var (
 	_ io.ReadCloser = (*bufReader)(nil)
-	_ io.ReadCloser = (*mockReader)(nil)
+	_ io.ReadCloser = (*replayReader)(nil)
 )
 
 func (l ZHTTPLogger) LogRequest(req *http.Request) {
@@ -41,7 +43,7 @@ func (l ZHTTPLogger) LogRequest(req *http.Request) {
 func (l ZHTTPLogger) LogResponse(req *http.Request, resp *http.Response, err error, dur time.Duration) {
 
 	var (
-		respReader *mockReader
+		respReader *replayReader
 	)
 	if resp != nil {
 		// NOTE: RoundTrip must return err == nil if it obtained
@@ -49,8 +51,8 @@ func (l ZHTTPLogger) LogResponse(req *http.Request, resp *http.Response, err err
 		//
 		// 所以当 resp 非空时，err 一定为空
 
-		// 使用 mockReader 完整读取 response 的 body 并替换之
-		respReader = newMockReader(resp.Body)
+		// 使用 replayReader 完整读取 response 的 body 并替换之
+		respReader = newReplayReader(resp.Body)
 		resp.Body = respReader
 		// 若读取 response 的过程中出现了错误，则也算错误
 		err = respReader.Err()
@@ -109,19 +111,19 @@ func (r *bufReader) Data() []byte {
 	return r.buf.Bytes()
 }
 
-// newMockReader 新建一个 mockReader，src 不可为 nil
-func newMockReader(src io.ReadCloser) *mockReader {
+// newReplayReader 新建一个 replayReader，src 不可为 nil
+func newReplayReader(src io.ReadCloser) *replayReader {
 	// NOTE: ioutil.ReadAll 不会返回 io.EOF
 	data, err := ioutil.ReadAll(src)
 	src.Close()
-	return &mockReader{
+	return &replayReader{
 		reader: bytes.NewReader(data),
 		data:   data,
 		err:    err,
 	}
 }
 
-func (r *mockReader) Read(p []byte) (n int, err error) {
+func (r *replayReader) Read(p []byte) (n int, err error) {
 	n, err = r.reader.Read(p)
 	if err != nil {
 		// NOTE: bytes.Reader 返回的错误只有 EOF
@@ -136,14 +138,14 @@ func (r *mockReader) Read(p []byte) (n int, err error) {
 	return
 }
 
-func (r *mockReader) Close() error {
+func (r *replayReader) Close() error {
 	return nil
 }
 
-func (r *mockReader) Data() []byte {
+func (r *replayReader) Data() []byte {
 	return r.data
 }
 
-func (r *mockReader) Err() error {
+func (r *replayReader) Err() error {
 	return r.err
 }

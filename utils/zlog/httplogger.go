@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ernesto-jimenez/httplogger"
 	"github.com/rs/zerolog"
 )
 
@@ -34,6 +35,11 @@ var (
 	_ io.ReadCloser = (*bufReader)(nil)
 	_ io.ReadCloser = (*replayReader)(nil)
 )
+
+// NewZLoggedTransport 封装一个 RoundTripper，使用 zerolog 打印请求/响应：包括 body
+func NewZLoggedTransport(rt http.RoundTripper) http.RoundTripper {
+	return httplogger.NewLoggedTransport(rt, ZHTTPLogger{})
+}
 
 func (l ZHTTPLogger) LogRequest(req *http.Request) {
 	// 替换 request 的 body

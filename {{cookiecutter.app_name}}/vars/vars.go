@@ -13,12 +13,10 @@ var (
 	Router chi.Router = chi.NewRouter()
 
 	// 日志
-	LogLevel zerolog.Level = zerolog.InfoLevel
-	Logger   zerolog.Logger
+	Logger zerolog.Logger
 
 	// 数据库
-	DSN string
-	DB  *sql.DB
+	DB *sql.DB
 
 	// TODO ...
 )

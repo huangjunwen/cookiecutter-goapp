@@ -4,6 +4,17 @@ models: mysql_server_started
 	@sqlw-mysql -dsn "root:123456@tcp(localhost:{{cookiecutter.devdb_port}})/dev?parseTime=true" \
 		-out ../models -stmt stmts
 
+
+# Enable general query log.
+enable_query_log: mysql_server_started
+	@docker exec "devdb_{{cookiecutter.app_name}}" mysql -uroot -p123456 -e "set global general_log='ON',general_log_file='/docker-entrypoint-initdb.d/queries.log'" dev
+
+
+# Disable general query log.
+disable_query_log: mysql_server_started
+	@docker exec "devdb_{{cookiecutter.app_name}}" mysql -uroot -p123456 -e "set global general_log='OFF'" dev && rm $(shell pwd)/.initdb.d/queries.log
+
+
 # Launch a dev MySQL client.
 mysql_client: mysql_server_started
 	@docker exec -it "devdb_{{cookiecutter.app_name}}" mysql -uroot -p123456 dev

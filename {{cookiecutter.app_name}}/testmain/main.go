@@ -14,11 +14,11 @@ import (
 func main() {
 	db, err := sql.Open("mysql", "root:123456@tcp(localhost:{{cookiecutter.devdb_port}})/dev?parseTime=true")
 	if err != nil {
-					return nil, err
+		log.Fatal(err)
 	}
 	defer db.Close()
 
-	logger := zerolog.New(os.Stdout)
+	logger := zerolog.New(os.Stdout).Level(zerolog.InfoLevel)
 
 	rt, err := {{cookiecutter.app_name}}.Initialize(
 		db,

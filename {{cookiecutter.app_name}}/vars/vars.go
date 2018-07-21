@@ -3,6 +3,7 @@ package vars
 import (
 	"database/sql"
 
+	"bitbucket.org/jayven/platform-kit/svc"
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
 )
@@ -17,6 +18,10 @@ var (
 
 	// 数据库
 	DB *sql.DB
+
+	// 服务
+	SvcServer libsvc.ServiceServer
+	SvcClient libsvc.ServiceClient
 
 	// TODO ...
 )

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"%%baseimport%%/vars"
-	"github.com/huangjunwen/cookiecutter-goapp/utils/zlog"
+	"bitbucket.org/jayven/platform-kit/utils/zlog"
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/zerolog/hlog"
 )

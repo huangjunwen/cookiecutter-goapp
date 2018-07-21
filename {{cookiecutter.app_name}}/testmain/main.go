@@ -21,8 +21,8 @@ func main() {
 	logger := zerolog.New(os.Stdout).Level(zerolog.InfoLevel)
 
 	rt, err := {{cookiecutter.app_name}}.Initialize(
-		db,
 		&logger,
+		db,
 	)
 	if err != nil {
 		log.Fatal(err)

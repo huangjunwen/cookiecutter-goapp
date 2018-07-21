@@ -11,8 +11,8 @@ import (
 
 // Initialize 初始化该 app
 func Initialize(
-	db *sql.DB,
 	logger *zerolog.Logger,
+	db *sql.DB,
 ) (chi.Router, error) {
 	// 日志
 	vars.Logger = logger.With().Timestamp().Str("app", "{{cookiecutter.app_name}}").Logger()

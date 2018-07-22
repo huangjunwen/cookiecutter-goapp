@@ -1,6 +1,7 @@
 package {{ cookiecutter.app_name }}
 
 import (
+	"context"
 	"database/sql"
 
 	"%%baseimport%%/endpoints"

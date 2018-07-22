@@ -6,6 +6,7 @@ import (
 	"%%baseimport%%/vars"
 	"bitbucket.org/jayven/platform-kit/utils/zlog"
 	"github.com/go-chi/chi/middleware"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
 )
 

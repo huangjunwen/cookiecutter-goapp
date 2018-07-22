@@ -15,7 +15,20 @@ func InitEndpoints() error {
 
 	// 一些基础中间件，从上到下对应从最外层到最内层
 	rt.Use(hlog.NewHandler(vars.Logger))
-	rt.Use(hlog.RequestIDHandler("reqid", "Inapp-Req-ID"))
+	rt.Use(middleware.RequestID)
+	rt.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			reqID := middleware.GetReqID(ctx)
+			if reqID != "" {
+				log := zerolog.Ctx(ctx)
+				log.UpdateContext(func(c zerolog.Context) zerolog.Context {
+					return c.Str(vars.ReqIDFieldName, reqID)
+				})
+			}
+			next.ServeHTTP(w, r)
+		})
+	})
 	rt.Use(middleware.RequestLogger(zlog.ZLogFormatter{}))
 	rt.Use(middleware.Recoverer)
 

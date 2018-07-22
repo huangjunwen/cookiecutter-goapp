@@ -7,9 +7,9 @@ import (
 	"%%baseimport%%/endpoints"
 	"%%baseimport%%/services"
 	"%%baseimport%%/vars"
-	"bitbucket.org/jayven/platform-kit/svc"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/huangjunwen/platform-kit/svc"
 	"github.com/rs/zerolog"
 )
 

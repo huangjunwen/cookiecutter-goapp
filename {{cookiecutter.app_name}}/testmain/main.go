@@ -7,9 +7,9 @@ import (
 	"os"
 
 	"%%baseimport%%"
-	"bitbucket.org/jayven/platform-kit/svc"
-	"github.com/rs/zerolog"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/huangjunwen/platform-kit/svc"
+	"github.com/rs/zerolog"
 )
 
 func main() {

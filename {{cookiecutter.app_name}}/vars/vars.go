@@ -3,8 +3,8 @@ package vars
 import (
 	"database/sql"
 
-	"bitbucket.org/jayven/platform-kit/svc"
 	"github.com/go-chi/chi"
+	"github.com/huangjunwen/platform-kit/svc"
 	"github.com/rs/zerolog"
 )
 

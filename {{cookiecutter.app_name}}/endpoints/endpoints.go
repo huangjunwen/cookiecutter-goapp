@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"%%baseimport%%/vars"
-	"bitbucket.org/jayven/platform-kit/utils/zlog"
 	"github.com/go-chi/chi/middleware"
+	"github.com/huangjunwen/platform-kit/utils/zlog"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
 )

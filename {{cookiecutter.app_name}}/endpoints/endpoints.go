@@ -5,7 +5,7 @@ import (
 
 	"%%baseimport%%/vars"
 	"github.com/go-chi/chi/middleware"
-	"github.com/huangjunwen/platform-kit/utils/zlog"
+	"github.com/huangjunwen/platform-kit/util/zlog"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
 )
@@ -30,7 +30,7 @@ func InitEndpoints() error {
 			next.ServeHTTP(w, r)
 		})
 	})
-	rt.Use(middleware.RequestLogger(zlog.ZLogFormatter{}))
+	rt.Use(middleware.RequestLogger(zlogutil.ZLogFormatter{}))
 	rt.Use(middleware.Recoverer)
 
 	rt.Get("/", func(w http.ResponseWriter, r *http.Request) {
